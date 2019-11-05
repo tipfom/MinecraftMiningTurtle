@@ -88,13 +88,13 @@ end
 function tryRefuel()
     if turtle.getFuelLevel() > 1000 then return false end
     turtle.turnLeft()
-    os.sleep(2)
+
     turtle.select(1)
     turtle.suck(32)
     turtle.refuel()
     print("Fuel:", turtle.getFuelLevel())
     turtle.select(3)
-    os.sleep(2)
+
     turtle.turnRight()
     return true
 end
