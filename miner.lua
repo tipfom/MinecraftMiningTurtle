@@ -24,43 +24,37 @@ function isIgnoredBlock(name)
     return false
 end
 
-function dumpInventory()
-    turtle.turnLeft() 
-    turtle.turnLeft() 
+function moveProgress()
     i = 1
     while i < progress do
         i = i + 1
         for k = 1, 3 do
-            turtle.forward()
-        end
-    end
-
-    for i = 1 , 16 do
-        turtle.select(i)
-        turtle.drop()
-    end
-    turtle.select(1)
-
-    turtle.turnLeft() 
-    turtle.turnLeft() 
-    i = 1
-    while i < progress do
-        i = i + 1
-        for k = 1, 3 do
-            turtle.forward()
+            while not turtle.forward() do turtle.attack() end
         end
     end
 end
 
+function dumpInventory()
+    for i = 3 , 16 do
+        turtle.select(i)
+        turtle.drop()
+    end
+    turtle.select(3)
+end
+
 function clearInventory()
     for i = 1, depth do
-        turtle.up()
+        while not turtle.up() do turtle.attackUp() end
     end
 
+    moveProgress()
     dumpInventory()
-
+    turtle.turnLeft() 
+    turtle.turnLeft() 
+    moveProgress()
+    
     for i = 1, depth do
-        turtle.down()
+        while not turtle.down() do turtle.attackDown() end
     end
 end
 
@@ -85,9 +79,31 @@ function checkArea()
     return true
 end
 
-function start()
+function tryRefuel()
+    if turtle.getFuelLevel() > 1000 then return false end
+    turtle.turnLeft()
+    os.sleep(2)
+    turtle.select(1)
+    turtle.suck(32)
     turtle.refuel()
-    print(turtle.getFuelLevel())
+    print("Fuel:", turtle.getFuelLevel())
+    turtle.select(3)
+    os.sleep(2)
+    turtle.turnRight()
+    return true
+end
+
+function placeSafetyBlock()
+    turtle.select(2)
+    turtle.placeDown()
+    turtle.select(3)
+end
+
+function start()
+    tryRefuel()
+    turtle.turnLeft()
+    turtle.turnLeft()
+
     while true do 
         while moveDown() do
             if not checkArea() then return nil end
@@ -95,16 +111,25 @@ function start()
         end
         
         while depth > 0 do
-            turtle.up()
+            while not turtle.up() do turtle.attackUp() end
             depth = depth - 1
         end
+        placeSafetyBlock()
 
+        turtle.turnLeft()
+        turtle.turnLeft()
+        
+        moveProgress()
         dumpInventory()
+        tryRefuel()
+        turtle.turnLeft()
+        turtle.turnLeft()
+        moveProgress()
         progress = progress + 1
 
         for k = 1, 3 do
             turtle.dig()
-            turtle.forward()
+            while not turtle.forward() do turtle.attack() end
         end
     end
 end
