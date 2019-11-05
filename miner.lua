@@ -44,7 +44,10 @@ end
 
 function clearInventory()
     for i = 1, depth do
-        while not turtle.up() do turtle.attackUp() end
+        while not turtle.up() do 
+            turtle.attackUp()
+            turtle.digUp()
+        end
     end
 
     moveProgress()
@@ -54,7 +57,10 @@ function clearInventory()
     moveProgress()
     
     for i = 1, depth do
-        while not turtle.down() do turtle.attackDown() end
+        while not turtle.down() do
+             turtle.attackDown() 
+             turtle.digDown()
+        end
     end
 end
 
@@ -111,7 +117,10 @@ function start()
         end
         
         while depth > 0 do
-            while not turtle.up() do turtle.attackUp() end
+            while not turtle.up() do
+                turtle.attackUp() 
+                turtle.digUp()
+            end
             depth = depth - 1
         end
         placeSafetyBlock()
