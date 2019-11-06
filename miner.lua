@@ -25,8 +25,8 @@ function turn180degrees()
 end
 
 function needsToReturnHome()
-    if turtle.getItemCount(16) > 0 return true
-    if turtle.getFuelLevel() < 1000 return true
+    if turtle.getItemCount(16) > 0 then return true end
+    if turtle.getFuelLevel() < 1000 then return true end
     return false
 end
 
@@ -42,7 +42,10 @@ function moveForward(stepCount)
     while i < stepCount do
         i = i + 1
         for k = 1, 3 do
-            while not turtle.forward() do turtle.attack() end
+            while not turtle.forward() do 
+                turtle.attack() 
+                turtle.dig() 
+            end
         end
     end
 end
