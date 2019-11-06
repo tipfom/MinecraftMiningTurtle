@@ -52,7 +52,7 @@ function dumpInventory()
         turtle.select(i)
         turtle.drop()
     end
-    turtle.select(3)
+    turtle.select(2)
 end
 
 function returnToHomeFromShaft()
