@@ -24,8 +24,10 @@ function turn180degrees()
     turtle.turnLeft()
 end
 
-function isInventoryFull()
-    return turtle.getItemCount(16) > 0
+function needsToReturnHome()
+    if turtle.getItemCount(16) > 0 return true
+    if turtle.getFuelLevel() < 1000 return true
+    return false
 end
 
 function isIgnoredBlock(name)
@@ -65,7 +67,7 @@ function returnToShaftFromHome()
     moveForward(sidewardSteps)
 end
 
-function clearInventory()
+function returnHome()
     for i = 1, depth do
         while not turtle.up() do 
             turtle.attackUp()
@@ -76,6 +78,7 @@ function clearInventory()
     turn180degrees()
     returnToHomeFromShaft()
     dumpInventory()
+    tryRefuel()
     turn180degrees()
     returnToShaftFromHome()
     
@@ -126,7 +129,7 @@ end
 function clearShaft()
     while moveDown() do
         clearSorrounding()
-        if isInventoryFull() then clearInventory() end
+        if needsToReturnHome() then returnHome() end
     end
     
     while depth > 0 do
