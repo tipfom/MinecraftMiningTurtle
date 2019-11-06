@@ -1,7 +1,10 @@
-progress = 1
-depth = 0
+chunkWidth = 5
 
-ignoredBlocks = { "minecraft:dirt", "minecraft:stone", "minecraft:cobblestone", "minecraft:gravel", "minecraft:grass" }
+depth = 0
+forwardSteps = 0
+sidewardSteps = 0
+
+ignoredBlocks = { "minecraft:dirt", "minecraft:stone", "minecraft:cobblestone", "minecraft:gravel", "minecraft:grass", "minecraft:bedrock" }
 
 function moveDown()
     turtle.digDown()
@@ -11,6 +14,11 @@ function moveDown()
     else 
         return false
     end
+end
+
+function turn180degrees()
+    turtle.turnLeft()
+    turtle.turnLeft()
 end
 
 function isInventoryFull()
@@ -24,9 +32,9 @@ function isIgnoredBlock(name)
     return false
 end
 
-function moveProgress()
-    i = 1
-    while i < progress do
+function moveForward(stepCount)
+    i = 0
+    while i < stepCount do
         i = i + 1
         for k = 1, 3 do
             while not turtle.forward() do turtle.attack() end
@@ -42,6 +50,18 @@ function dumpInventory()
     turtle.select(3)
 end
 
+function returnToHomeFromShaft()
+    moveForward(sidewardSteps)
+    turtle.turnLeft()
+    moveForward(forwardSteps)
+end
+
+function returnToShaftFromHome()
+    moveForward(forwardSteps)
+    turtle.turnRight()
+    moveForward(sidewardSteps)
+end
+
 function clearInventory()
     for i = 1, depth do
         while not turtle.up() do 
@@ -50,11 +70,11 @@ function clearInventory()
         end
     end
 
-    moveProgress()
+    turn180degrees()
+    returnToHomeFromShaft()
     dumpInventory()
-    turtle.turnLeft() 
-    turtle.turnLeft() 
-    moveProgress()
+    turn180degrees()
+    returnToShaftFromHome()
     
     for i = 1, depth do
         while not turtle.down() do
@@ -67,27 +87,22 @@ end
 function checkBlock()
     local success, data = turtle.inspect()
     if success then
-        if data.name == "minecraft:bedrock" then
-            return false
-        elseif isIgnoredBlock(data.name) then
-            return true
+        if not isIgnoredBlock(data.name) then
+            turtle.dig()
         end
-        turtle.dig()
     end
-    return true
 end
 
-function checkArea()
+function clearSorrounding()
     for i = 1 , 4 do
-        if not checkBlock() then return false end
+        checkBlock()
         turtle.turnLeft()
     end 
-    return true
 end
 
 function tryRefuel()
     if turtle.getFuelLevel() > 1000 then return false end
-    turtle.turnLeft()
+    turtle.turnRight()
 
     turtle.select(1)
     turtle.suck(32)
@@ -95,7 +110,7 @@ function tryRefuel()
     print("Fuel:", turtle.getFuelLevel())
     turtle.select(3)
 
-    turtle.turnRight()
+    turtle.turnLeft()
     return true
 end
 
@@ -105,40 +120,40 @@ function placeSafetyBlock()
     turtle.select(3)
 end
 
+function clearShaft()
+    while moveDown() do
+        clearSorrounding()
+        if isInventoryFull() then clearInventory() end
+    end
+    
+    while depth > 0 do
+        while not turtle.up() do
+            turtle.attackUp() 
+            turtle.digUp()
+        end
+        depth = depth - 1
+    end
+    placeSafetyBlock()
+end
+
 function start()
     tryRefuel()
     turtle.turnLeft()
-    turtle.turnLeft()
-
+    
     while true do 
-        while moveDown() do
-            if not checkArea() then return nil end
-            if isInventoryFull() then clearInventory() end
-        end
+        clearShaft()
         
-        while depth > 0 do
-            while not turtle.up() do
-                turtle.attackUp() 
-                turtle.digUp()
-            end
-            depth = depth - 1
-        end
-        placeSafetyBlock()
-
-        turtle.turnLeft()
-        turtle.turnLeft()
-        
-        moveProgress()
-        dumpInventory()
-        tryRefuel()
-        turtle.turnLeft()
-        turtle.turnLeft()
-        moveProgress()
-        progress = progress + 1
-
-        for k = 1, 3 do
-            turtle.dig()
-            while not turtle.forward() do turtle.attack() end
+        if sidewardSteps < chunkWidth then
+            sidewardSteps = sidewardSteps + 1
+            moveForward(1)
+        else
+            turn180degrees()
+            moveForward(sidewardSteps)
+            turtle.turnRight()
+            moveForward(1)
+            turtle.turnRight()
+            sidewardSteps = 0
+            forwardSteps = forwardSteps + 1
         end
     end
 end
