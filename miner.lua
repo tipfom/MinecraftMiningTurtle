@@ -1,5 +1,8 @@
+-- Configuration
 chunkWidth = 5
+forwardLimit = 20
 
+----------------
 depth = 0
 forwardSteps = 0
 sidewardSteps = 0
@@ -153,7 +156,12 @@ function start()
             moveForward(1)
             turtle.turnRight()
             sidewardSteps = 0
+
             forwardSteps = forwardSteps + 1
+            if forwardSteps > forwardLimit then
+                returnToHomeFromShaft()
+                break
+            end
         end
     end
 end
