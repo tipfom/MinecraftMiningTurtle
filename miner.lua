@@ -114,19 +114,22 @@ function tryRefuel()
     turtle.turnRight()
 
     turtle.select(1)
-    turtle.suck(32)
-    turtle.refuel()
-    print("Fuel:", turtle.getFuelLevel())
-    turtle.select(3)
+    while turtle.getFuelLevel() < 5000 do
+        turtle.suck(3)
+        if not turtle.refuel() then
+            print("Error: Need more fuel")
+            os.sleep(2)
+        end
+    end
+    print("Finished Refuel: ", turtle.getFuelLevel(), " Fuel available")
+    turtle.select(2)
 
     turtle.turnLeft()
     return true
 end
 
 function placeSafetyBlock()
-    turtle.select(2)
     turtle.placeDown()
-    turtle.select(3)
 end
 
 function clearShaft()
