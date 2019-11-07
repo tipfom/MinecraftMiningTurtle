@@ -7,7 +7,7 @@ depth = 0
 forwardSteps = 0
 sidewardSteps = 0
 
-ignoredBlocks = { "minecraft:dirt", "minecraft:stone", "minecraft:cobblestone", "minecraft:gravel", "minecraft:grass", "minecraft:bedrock" }
+ignoredBlocks = { "minecraft:dirt", "minecraft:stone", "minecraft:cobblestone", "minecraft:gravel", "minecraft:grass", "minecraft:bedrock", "minecraft:chest" }
 
 function moveDown()
     turtle.digDown()
@@ -55,6 +55,10 @@ function dumpInventory()
         turtle.select(i)
         turtle.drop()
     end
+    if turtle.getItemCount(1) > 0 then 
+        turtle.select(1)
+        turtle.drop()
+    end
     turtle.select(2)
 end
 
@@ -68,6 +72,29 @@ function returnToShaftFromHome()
     moveForward(forwardSteps)
     turtle.turnRight()
     moveForward(sidewardSteps)
+end
+
+function tryRefuel()
+    print("try refuel")
+    if turtle.getFuelLevel() > 1000 then
+        print("not necessary")
+        return false 
+    end
+    turtle.turnRight()
+
+    turtle.select(1)
+    while turtle.getFuelLevel() < 5000 do
+        turtle.suck(3)
+        if not turtle.refuel() then
+            print("Error: Need more fuel")
+            os.sleep(2)
+        end
+    end
+    print("Finished Refuel: ", turtle.getFuelLevel(), " Fuel available")
+    turtle.select(2)
+
+    turtle.turnLeft()
+    return true
 end
 
 function returnHome()
@@ -109,24 +136,6 @@ function clearSorrounding()
     end 
 end
 
-function tryRefuel()
-    if turtle.getFuelLevel() > 1000 then return false end
-    turtle.turnRight()
-
-    turtle.select(1)
-    while turtle.getFuelLevel() < 5000 do
-        turtle.suck(3)
-        if not turtle.refuel() then
-            print("Error: Need more fuel")
-            os.sleep(2)
-        end
-    end
-    print("Finished Refuel: ", turtle.getFuelLevel(), " Fuel available")
-    turtle.select(2)
-
-    turtle.turnLeft()
-    return true
-end
 
 function placeSafetyBlock()
     turtle.placeDown()
