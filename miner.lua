@@ -26,7 +26,7 @@ end
 
 function needsToReturnHome()
     if turtle.getItemCount(16) > 0 then return true end
-    if turtle.getFuelLevel() < 1000 then return true end
+    if turtle.getFuelLevel() < 500 then return true end
     return false
 end
 
@@ -83,12 +83,13 @@ function tryRefuel()
     turtle.turnRight()
 
     turtle.select(1)
-    while turtle.getFuelLevel() < 5000 do
-        turtle.suck(3)
-        if not turtle.refuel() then
-            print("Error: Need more fuel")
-            os.sleep(2)
-        end
+    while not turtle.suck(1) do
+        print("Error: Need more fuel")
+        os.sleep(2)
+    end
+
+    while turtle.suck(1) do
+        turtle.refuel()
     end
     print("Finished Refuel: ", turtle.getFuelLevel(), " Fuel available")
     turtle.select(2)
