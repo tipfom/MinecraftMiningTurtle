@@ -1,7 +1,9 @@
 -- Configuration
 chunkWidth = 5
 forwardLimit = 20
+
 criticalFuelLevel = chunkWidth * 3 + forwardLimit * 3 + 80
+necessaryFuelLevel = criticalFuelLevel * 10
 
 ----------------
 depth = 0
@@ -80,7 +82,7 @@ function tryRefuel()
     while turtle.getFuelLevel() < turtle.getFuelLimit() do
         if turtle.suck(1) then
             turtle.refuel()
-        elseif turtle.getFuelLevel() < criticalFuelLevel then
+        elseif turtle.getFuelLevel() < necessaryFuelLevel then
             print("Error: Need more fuel")
             os.sleep(2)
         else
