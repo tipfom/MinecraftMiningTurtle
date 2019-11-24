@@ -1,6 +1,7 @@
 -- Configuration
 chunkWidth = 5
 forwardLimit = 20
+criticalFuelLevel = chunkWidth * 3 + forwardLimit * 3 + 80
 
 ----------------
 depth = 0
@@ -25,9 +26,7 @@ function turn180degrees()
 end
 
 function needsToReturnHome()
-    if turtle.getItemCount(16) > 0 then return true end
-    if turtle.getFuelLevel() < 500 then return true end
-    return false
+    return (turtle.getItemCount(16) > 0) or (turtle.getFuelLevel() < criticalFuelLevel)
 end
 
 function isIgnoredBlock(name)
@@ -75,22 +74,20 @@ function returnToShaftFromHome()
 end
 
 function tryRefuel()
-    print("try refuel")
-    if turtle.getFuelLevel() > 1000 then
-        print("not necessary")
-        return false 
-    end
     turtle.turnRight()
 
     turtle.select(1)
-    while not turtle.suck(1) do
-        print("Error: Need more fuel")
-        os.sleep(2)
+    while turtle.getFuelLevel() < turtle.getFuelLimit() do
+        if turtle.suck(1) then
+            turtle.refuel()
+        elseif turtle.getFuelLevel() < criticalFuelLevel then
+            print("Error: Need more fuel")
+            os.sleep(2)
+        else
+            break
+        end
     end
 
-    while turtle.suck(1) do
-        turtle.refuel()
-    end
     print("Finished Refuel: ", turtle.getFuelLevel(), " Fuel available")
     turtle.select(2)
 
