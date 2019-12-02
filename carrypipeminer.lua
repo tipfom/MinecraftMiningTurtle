@@ -2,7 +2,7 @@
 chunkWidth = 5
 forwardLimit = 20
 
-criticalFuelLevel = chunkWidth * 3 + forwardLimit * 3 + chunkWidth * 80
+criticalFuelLevel = chunkWidth * 3 + forwardLimit * 3 + 6 * chunkWidth * 80
 necessaryFuelLevel = criticalFuelLevel * 5
 
 ----------------
@@ -49,11 +49,11 @@ function forceMoveOneBlock()
     end
 end
 
-function moveForward(stepCount)
+function moveForward(stepCount, stepWidth)
     i = 0
     while i < stepCount do
         i = i + 1
-        for k = 1, 3 do
+        for k = 1, stepWidth do
             forceMoveOneBlock()
         end
     end
@@ -84,7 +84,7 @@ function refuel()
     turtle.up()
     turtle.up()
     turtle.up()
-    moveForward(forwardSteps)
+    moveForward(forwardSteps, 3)
 
     turtle.forward()
     turtle.forward()
@@ -106,7 +106,7 @@ function refuel()
     turtle.select(2)
 
     turn180degrees()
-    moveForward(forwardSteps)
+    moveForward(forwardSteps, 3)
 
     turtle.down()
     turtle.down()
@@ -125,13 +125,13 @@ function emptyInventory()
     end
 
     turn180degrees()
-    moveForward(sidewardSteps)
+    moveForward(sidewardSteps, 4)
     turtle.turnLeft()
 
     dumpInventory()
     
     turtle.turnLeft()
-    moveForward(sidewardSteps)
+    moveForward(sidewardSteps, 4)
     
     for i = 1, depth do
         while not turtle.down() do
@@ -234,13 +234,13 @@ function start()
 
         clearShaft()
         while sidewardSteps < chunkWidth do
-            moveForward(1)    
+            moveForward(1, 4)    
             sidewardSteps = sidewardSteps + 1
             clearShaft()
         end
 
         turn180degrees()
-        moveForward(sidewardSteps)
+        moveForward(sidewardSteps, 4)
         sidewardSteps = 0
         
         turtle.turnLeft()
